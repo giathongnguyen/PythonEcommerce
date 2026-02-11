@@ -7,3 +7,4 @@ def view_audit_log():
     print("\n===== AUDIT LOG =====")
     for entry in audit_log:
         print("-", entry)
+

@@ -1,15 +1,9 @@
 from products import products
 from access_control import check_access
 from audit import log_event
+from discounts import calculate_discount
 
 orders = []
-
-def calculate_discount(subtotal):
-    if subtotal >= 1000:
-        return 0.10
-    elif subtotal >= 500:
-        return 0.05
-    return 0
 
 def process_payment(amount):
     while True:
@@ -61,13 +55,60 @@ def checkout(user):
         print("Cart is empty")
         return
 
+    while True:
+        print("\n--- Cart Review ---")
+        for pid, qty in cart.items():
+            product = next(p for p in products if p["product_id"] == pid)
+            print(f"{pid}: {product['name']} x{qty} = ${product['price']*qty}")
+
+        print("\nCart Options:")
+        print("1. Change quantity")
+        print("2. Remove item")
+        print("3. Proceed to payment")
+
+        choice = input("Select an option: ")
+
+        if choice == "1":
+            try:
+                pid = int(input("Enter product ID to change quantity: "))
+                if pid not in cart:
+                    print("Product not in cart")
+                    continue
+                new_qty = int(input("Enter new quantity: "))
+                if new_qty <= 0:
+                    print("Quantity must be positive")
+                    continue
+                product = next(p for p in products if p["product_id"] == pid)
+                if new_qty > product["stock"]:
+                    print("Insufficient stock")
+                    continue
+                cart[pid] = new_qty
+                print(f"Quantity updated: {product['name']} x{new_qty}")
+            except ValueError:
+                print("Invalid input")
+
+        elif choice == "2":
+            try:
+                pid = int(input("Enter product ID to remove from cart: "))
+                if pid not in cart:
+                    print("Product not in cart")
+                    continue
+                product = next(p for p in products if p["product_id"] == pid)
+                del cart[pid]
+                print(f"{product['name']} removed from cart")
+            except ValueError:
+                print("Invalid input")
+
+        elif choice == "3":
+            break
+
+        else:
+            print("Invalid option")
+
     subtotal = 0
-    print("\n----- Cart Review -----")
     for pid, qty in cart.items():
         product = next(p for p in products if p["product_id"] == pid)
-        item_total = product["price"] * qty
-        subtotal += item_total
-        print(f"{product['name']} x{qty} = ${item_total}")
+        subtotal += product["price"] * qty
 
     discount_rate = calculate_discount(subtotal)
     discount_amount = subtotal * discount_rate

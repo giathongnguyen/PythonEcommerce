@@ -1,7 +1,7 @@
 from users import login
 from products import filter_products_loop
 from orders import checkout, view_orders
-from audit import view_audit_log
+from admin import admin_menu
 from seller import seller_menu
 
 print("=== E-Commerce Order Management System ===")
@@ -40,18 +40,5 @@ while True:
             seller_menu(user)
 
     elif user["role"] == "admin":
-        while True:
-            print("\n=== Admin Dashboard ===")
-            print("1. View Audit Log")
-            print("2. Exit")
-
-            choice = input("Select option: ")
-
-            if choice == "1":
-                view_audit_log()
-            elif choice == "2":
-                print("Goodbye!")
-                user["logged_in"] = False
-                break
-            else:
-                print("Invalid option")
+        while user["logged_in"]:
+            admin_menu(user)
