@@ -168,7 +168,7 @@ def view_orders(user):
             print(f"{'ID':<6}{'Name':<15}{'Quantity':<10}{'Total($)'}")
             print("-"*45)
             for pid, qty in o["items"].items():
-                product = next(p for p in products if p["product_id"] == pid)
+                product = next((p for p in products if p["product_id"] == pid), None)
                 item_total = product["price"] * qty
                 print(f"{pid:<6}{product['name']:<15}{qty:<10}{item_total}")
             print("-"*45)
